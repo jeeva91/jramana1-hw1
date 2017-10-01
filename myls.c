@@ -14,7 +14,7 @@
 #include<unistd.h>
 #include<sys/stat.h>
 
-
+#define FILESIZE 255
 
 typedef struct{
   char* name;
@@ -29,14 +29,15 @@ int
 main(int argc, char *argv[]){
   DIR *dp;
   struct dirent *dirp, *direntlist, *cdirent;
-  char* dirname;
+  char *dirname;
   int dirnsize,dirnite;
   dirnsize = 10;
   direntlist = calloc(dirnsize, sizeof(struct dirent));
   cdirent = direntlist;
   dirnite = 0;
+  dirname= NULL;
   if(argc ==1){
-    if((dirname = getwd(dirname))==NULL){
+    if((dirname = getcwd(dirname, 0))==NULL){
       fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }

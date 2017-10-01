@@ -13,6 +13,7 @@
 #include<dirent.h>
 #include<unistd.h>
 #include<sys/stat.h>
+#include<sys/param.h>
 
 
 #define FILESIZE 255
@@ -53,11 +54,19 @@ main(int argc, char *argv[]){
     
   }
 */
-
-  dirdts = get_dirdts("tcp.c", dirdts);
+  filename = NULL;
+  filename =getcwd(filename, 0);
+  dirdts = get_dirdts("jeeva", dirdts);
   printf("the file count is %d\n",dirdts_cnt);
   
   free(dirdts);
+  int inte;
+  dirdetails *currentdirdts;
+  currentdirdts = dirdts;
+  for(inte=0;inte<dirdts_cnt;inte++,currentdirdts++){
+    printf("%u\t%s\n",currentdirdts->sb.st_ino, currentdirdts->f_name);
+    
+  }
   
 
   return 0;
@@ -96,8 +105,14 @@ get_dirdts(char *filename, dirdetails *dirdts){
   //if it's directory, then read dir and add allthe files to the dirdts
   if(S_ISDIR(f_stat.st_mode)){
     dp = opendir(filename);
+    char *cfname;
+    cfname = malloc(MAXPATHLEN);
+   
     while((dirp = readdir(dp)) != NULL){
-        //check if there is enough space in the dirdts
+      strcat(cfname, filename);
+      strcat(cfname, "/");
+      strcat(cfname, dirp->d_name);
+      //check if there is enough space in the dirdts
       if(dirdts_size == dirdts_cnt){
 	dirdts_size *=2; 
 	dirdts = (dirdetails *) realloc((void *)dirdts,
@@ -106,10 +121,11 @@ get_dirdts(char *filename, dirdetails *dirdts){
 
       }
       strcpy(sb_dirdts.f_name, dirp->d_name); /* to be checked in debugging */
-      if((stat(dirp->d_name, &sb_stat)) ==-1){
+      if((stat(cfname, &sb_stat)) ==-1){
 	fprintf(stderr, "Can't stat the file %s, %s\n",
 		dirp->d_name, strerror(errno));
-	exit(EXIT_FAILURE);
+	//exit(EXIT_FAILURE);
+	continue;
       }
       else{
 	sb_dirdts.sb = sb_stat;
@@ -117,6 +133,7 @@ get_dirdts(char *filename, dirdetails *dirdts){
       }
       current_dirdts++;
       dirdts_cnt++;
+      *cfname ='\0';
     }
   }
   // if not a directory, push the stat of the file to the dirdts
