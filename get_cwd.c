@@ -17,8 +17,8 @@
 int
 main(void){
   char *dirname;
-  if((dirname = getcwd(dirname, BUFFSIZE))==NULL){
-      fprintf(stderr, "can't get the CWD %s", strerror(errno));
+  if((dirname = getcwd(dirname))==NULL){
+      fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
   printf("the directory is %s", dirname);
