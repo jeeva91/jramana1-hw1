@@ -30,6 +30,12 @@ main(int argc, char *argv[]){
   DIR *dp;
   struct dirent *dirp;
   char* dirname;
+  char* filelist;
+  struct stat *statlist, *statiter;
+  int countstat;
+  statlist = calloc(10, sizeof(struct stat));
+  countstat = 0;
+  statiter = statlist;
   if(argc ==1){
     if((dirname = getwd(dirname))==NULL){
       fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
@@ -51,22 +57,16 @@ main(int argc, char *argv[]){
 	  continue;
 	}
       }
+      *statiter = sb;
+      statiter++;
+      countstat++;
       
-      printf("%s (", dirp->d_name);
-      printType(sb);
-      printf(" - ");
       
-      if (lstat(dirp->d_name, &sb) == -1) {
-	fprintf(stderr,"Can't stat %s: %s\n", dirp->d_name,
-		strerror(errno));
-	continue;
-      }
-      printType(sb);
-      printf(")\n");
     }
   }
 
   closedir(dp);
+  printf("the count of the stat is %d", countstat);
   return 0;
 }
 
