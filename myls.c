@@ -2,7 +2,7 @@
  * Advanced Unix Programming
  * Midterm project
  * Author: Jeeva
- *Date: 10/01/2017
+ *Date: 09/28/2017
  */
 
 #include<stdio.h>
@@ -28,45 +28,42 @@ void printType(const struct stat);
 int
 main(int argc, char *argv[]){
   DIR *dp;
-  struct dirent *dirp;
+  struct dirent *dirp, *direntlist, *cdirent;
   char* dirname;
-  char* filelist;
-  struct stat *statlist, *statiter;
-  int countstat;
-  statlist = calloc(10, sizeof(struct stat));
-  countstat = 0;
-  statiter = statlist;
+  int dirnsize,dirnite;
+  dirnsize = 10;
+  direntlist = calloc(dirnsize, sizeof(struct dirent));
+  cdirent = direntlist;
+  dirnite = 0;
   if(argc ==1){
     if((dirname = getwd(dirname))==NULL){
       fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
     if((dp = opendir(dirname))==NULL){
-      fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
+      fprintf(stderr, "can't open the %s: %s\n", dirname, strerror(errno));
       exit(EXIT_FAILURE);
     }
     while((dirp = readdir(dp))!=NULL){
-      struct stat sb;
-      if (stat(dirp->d_name, &sb) == -1) {
-	fprintf(stderr, "Can't stat %s: %s\n", dirp->d_name,
-		strerror(errno));
-	
-	if (lstat(dirp->d_name, &sb) == -1) {
-	  fprintf(stderr,"Can't stat %s: %s\n", dirp->d_name,
-		  strerror(errno));
-	  continue;
-	}
+      if(dirnsize == dirnite){
+	dirnsize *=2;
+	direntlist = realloc((void *)direntlist, dirnsize*sizeof(struct dirent));
+	cdirent=direntlist+dirnite;
       }
-      *statiter = sb;
-      statiter++;
-      countstat++;
-      
-      
+      memcpy(cdirent, dirp, sizeof(struct dirent));
+      dirnite++;
+      cdirent++;
     }
   }
 
   closedir(dp);
-  printf("the count of the stat is %d", countstat);
+  printf("the count of the stat is %d\n", dirnite);
+  int i;
+  cdirent = direntlist;
+  for(i =0; i<dirnite; cdirent++, i++){
+    printf("%d:\t%u\t\t%s", i,cdirent->d_ino, cdirent->d_name);
+    printf("\t%u, %u, %u\n",strlen(cdirent->d_name), sizeof(*cdirent), sizeof(cdirent->d_ino));
+  }
   return 0;
 }
 

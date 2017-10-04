@@ -1,18 +1,18 @@
-Code comparision of the stat.c NetBSD and GNU
+Code comparison of the stat.c NetBSD and GNU
 
-1. The #if in the GNU has indendation which makes it easier to read.
+1. The #if in the GNU has indentation which makes it easier to read.
 
 2. The input options for the stat in the GNU is defined in the struct,
    whereas it's given as #define in the NetBSD.
    So, the NetBSD code will run faster than the GNU code.
-   but, the GNU code will have less number of line of code.
+   But, the GNU code will have less number of line of code.
    
 3. The variable declaration in the GNU has the initialization in it.
    But, in NetBSD, the declaration is done first and later the initialization is done
 
 4. The GNU code has more functions, they have divided the code into number of functions
    which makes it easier to read and comprehend.The call to the stat() and statfs() are
-   in a seperate function, which makes it more readable, but there is memory overhead
+   in a separate function, which makes it more readable, but there is memory overhead
    when calling a new function. And it takes more time. But, NetBSD is designed to run
    in the toaster machines, where the resources(memory) are low. So, they have called these
    functions in the main() directly rather than making a new function for it.
@@ -22,6 +22,5 @@ Code comparision of the stat.c NetBSD and GNU
 6. Another general thing I noticed is that, though our main motto is to call the function stat()
    the error checking, and the formatting of the output takes more effort than the actual motto.
 
-Thus I would conclude by saying that the GNU code is more structured and organized for easy readability.
-Whereas, the NetBSD code was written for efficiency and keeping in mind the availability of less resources
-.
+Thus, I would conclude by saying that the GNU code is more structured and organized for easy readability.
+Whereas, the NetBSD code was written for efficiency and keeping in mind the availability of less resources.

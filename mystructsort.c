@@ -8,7 +8,7 @@
 #include<stdlib.h>
 #define ARRAYSIZE 10
 
-typedef struct{
+typedef struct mmm{
   int id;
   char *name;
 }mystruct;
@@ -29,6 +29,9 @@ int array_manipul(void){
   
   /* mystruct *ms; */
   /* ms = calloc(10, mystruct); */
+
+  printf("the size of hte mystruct is %d", sizeof(struct mmm));
+  
   int *myarray,*inte, i, j;
   printf("allocating the myarray\n");
   myarray = calloc(ARRAYSIZE, sizeof(int));
@@ -37,6 +40,7 @@ int array_manipul(void){
   for(j=9;j>=0;inte++, j--){
     *inte = j;
   }
+  printf("the address of the my array%d\n", myarray);
   printf("array before  sorting\n");
   for(i=0;i<ARRAYSIZE;i++){
     printf("my array value is %d\n", myarray[i]);

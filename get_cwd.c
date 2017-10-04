@@ -17,11 +17,11 @@
 int
 main(void){
   char *dirname, *dirn;
-  if((dirn = getcwd(dirname, BUFFSIZE))==NULL){
+  if((dirname = getwd(dirname))==NULL){
       fprintf(stderr, "can't get the CWD %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
-  printf("the directory is %s", dirn);
+  printf("the directory is %s", dirname);
   return 0;
   
 }
