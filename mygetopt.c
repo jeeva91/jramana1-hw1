@@ -18,6 +18,7 @@ int main(int argc, char *argv[]){
   int filecnt = 0;                 // number of filenames present in the fileptr
   int opt;
   int iterator;
+  
 
   if((fileptr = malloc(filenms_memsize*FILENAMESIZE))==NULL){
     fprintf(stderr, "Error while allocating the memory fo rthe filenames");
@@ -173,6 +174,11 @@ int main(int argc, char *argv[]){
     printf("%s\n", current_fileptr);
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
+
+
+
+
+
 
   free(fileptr);
 
