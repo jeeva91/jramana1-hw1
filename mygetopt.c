@@ -100,7 +100,7 @@ int main(int argc, char *argv[]){
   if(A)
     printf("got A\n");
   current_fileptr = fileptr;
-  for(iterator = 0;iterator<filecnt; i++){
+  for(iterator = 0;iterator<filecnt; iterator++){
     printf("%s\n", current_fileptr);
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
