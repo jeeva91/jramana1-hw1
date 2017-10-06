@@ -106,7 +106,10 @@ get_dirdts(char *filename, dirdetails *dirdts){
   if(S_ISDIR(f_stat.st_mode)){
     dp = opendir(filename);
     char *cfname;
-    cfname = malloc(MAXPATHLEN);
+    if((cfname = malloc(MAXPATHLEN))==NULL){
+      fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+      exit(EXIT_FAILURE);
+    }
    
     while((dirp = readdir(dp)) != NULL){
       strcat(cfname, filename);
@@ -115,16 +118,19 @@ get_dirdts(char *filename, dirdetails *dirdts){
       //check if there is enough space in the dirdts
       if(dirdts_size == dirdts_cnt){
 	dirdts_size *=2; 
-	dirdts = (dirdetails *) realloc((void *)dirdts,
-			 dirdts_size*sizeof(dirdetails));
+	if((dirdts = (dirdetails *)
+	    realloc((void *)dirdts,
+		    dirdts_size*sizeof(dirdetails)))==NULL){
+	  fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+	  exit(EXIT_FAILURE);
+	}
 	current_dirdts = dirdts + dirdts_cnt;
 
       }
-      strcpy(sb_dirdts.f_name, dirp->d_name); /* to be checked in debugging */
+      strcpy(sb_dirdts.f_name, dirp->d_name); 
       if((stat(cfname, &sb_stat)) ==-1){
 	fprintf(stderr, "Can't stat the file %s, %s\n",
 		dirp->d_name, strerror(errno));
-	//exit(EXIT_FAILURE);
 	continue;
       }
       else{
@@ -143,7 +149,12 @@ get_dirdts(char *filename, dirdetails *dirdts){
     //check for enough space in the dirdts
     if(dirdts_size == dirdts_cnt){
       dirdts_size *=2; 
-      dirdts = (dirdetails *)realloc((void *)dirdts, dirdts_size*sizeof(dirdetails));
+      if(( dirdts = (dirdetails *)
+	   realloc((void *)dirdts,
+		   dirdts_size*sizeof(dirdetails)))==NULL){
+	fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+	exit(EXIT_FAILURE);
+      }
       current_dirdts = dirdts + dirdts_cnt;
     }
     memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
