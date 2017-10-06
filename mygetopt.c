@@ -165,7 +165,7 @@ int main(int argc, char *argv[]){
   }
 
   printfiles(dirdts);
-
+  /*
   if(A){
   }
   if(a){
@@ -210,7 +210,7 @@ int main(int argc, char *argv[]){
   }
   if(one){
   }
-  
+  */
   
   
   
@@ -319,6 +319,11 @@ void printfiles(dirdetails *dirdts){
   int iterator;
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt;iterator++,current_dirdts++){
+    if(i){
+      printf("%s\n",current_dirdts->sb.st_ino,current_dirdts->f_name);
+    }
+    else{
     printf("%s\n",current_dirdts->f_name);
+    }
   }
 }
