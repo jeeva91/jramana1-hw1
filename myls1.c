@@ -57,6 +57,7 @@ main(int argc, char *argv[]){
   dirdts = get_dirdts("tcp.c", dirdts);
   printf("the file count is %d\n",dirdts_cnt);
   
+  free(dirdts);
   
 
   return 0;
@@ -99,17 +100,19 @@ get_dirdts(char *filename, dirdetails *dirdts){
         //check if there is enough space in the dirdts
       if(dirdts_size == dirdts_cnt){
 	dirdts_size *=2; 
-	dirdts = realloc(dirdts,
+	dirdts = (dirdetails *) realloc((void *)dirdts,
 			 dirdts_size*sizeof(dirdetails));
+	current_dirdts = dirdts + dirdts_cnt;
+
       }
       strcpy(sb_dirdts.f_name, dirp->d_name); /* to be checked in debugging */
       if((stat(dirp->d_name, &sb_stat)) ==-1){
 	fprintf(stderr, "Can't stat the file %s, %s\n",
-		filename, strerror(errno));
+		dirp->d_name, strerror(errno));
 	exit(EXIT_FAILURE);
       }
       else{
-	sb_dirdts.sb = sb_stat; /* to be checked in debugging */
+	sb_dirdts.sb = sb_stat;
 	memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
       }
       current_dirdts++;
@@ -123,7 +126,8 @@ get_dirdts(char *filename, dirdetails *dirdts){
     //check for enough space in the dirdts
     if(dirdts_size == dirdts_cnt){
       dirdts_size *=2; 
-      dirdts = realloc(dirdts, dirdts_size*sizeof(dirdetails));
+      dirdts = (dirdetails *)realloc((void *)dirdts, dirdts_size*sizeof(dirdetails));
+      current_dirdts = dirdts + dirdts_cnt;
     }
     memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
     current_dirdts++;
