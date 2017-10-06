@@ -8,8 +8,23 @@
 #include<errno.h>
 #include<unistd.h>
 #include<stdlib.h>
+#include<sys/param.h>
+#include<sys/stat.h>
+#include<dirent.h>
 
 #define FILENAMESIZE 255
+
+#define FILESIZE 255
+
+typedef struct{
+  char f_name[FILESIZE];
+  struct stat sb;
+}dirdetails;
+
+int dirdts_size;
+int dirdts_cnt;
+
+dirdetails* get_dirdts(char *filename, dirdetails *);
 
 int main(int argc, char *argv[]){
   int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
@@ -18,7 +33,15 @@ int main(int argc, char *argv[]){
   int filecnt = 0;                 // number of filenames present in the fileptr
   int opt;
   int iterator;
-  
+  dirdetails *dirdts, *current_dirdts;
+  dirdts_size = 10;
+  dirdts_cnt = 0;
+  if((dirdts = calloc(dirdts_size, sizeof(dirdetails)))==NULL){
+    fprintf(stderr,
+	    "Error while getting the Memory allocated%s\n",
+	    strerror(errno));
+    exit(EXIT_FAILURE);
+  }  
 
   if((fileptr = malloc(filenms_memsize*FILENAMESIZE))==NULL){
     fprintf(stderr, "Error while allocating the memory fo rthe filenames");
@@ -121,6 +144,20 @@ int main(int argc, char *argv[]){
     }
   }
 
+  /* get the pwd as operand when no oprand is given */
+  if(filecnt==0){
+    filecnt++;
+    fileptr = getcwd(fileptr, 0);
+  }
+  current_fileptr = fileptr;
+  /* call the get_dirdts for all the operands */
+  for(iterator = 0;iterator<filecnt; iterator++){
+    printf("%s\n", current_fileptr);
+    current_fileptr = current_fileptr + FILENAMESIZE;
+  }
+
+  
+
   if(A){
   }
   if(a){
@@ -168,20 +205,101 @@ int main(int argc, char *argv[]){
   
   
   
-    printf("got A\n");
-  current_fileptr = fileptr;
-  for(iterator = 0;iterator<filecnt; iterator++){
-    printf("%s\n", current_fileptr);
-    current_fileptr = current_fileptr + FILENAMESIZE;
-  }
+  
 
 
 
 
-
-
+  free(dirdts);
+  //  free(cfname);
   free(fileptr);
 
 
   return 0;
+}
+
+dirdetails*
+get_dirdts(char *filename, dirdetails *dirdts){
+  struct dirent *dirp;
+  DIR* dp;
+  struct stat f_stat, sb_stat;
+  dirdetails *current_dirdts, sb_dirdts;
+  current_dirdts = dirdts + dirdts_cnt;
+
+  if((stat(filename, &f_stat))==-1){
+    fprintf(stderr,
+	    "Can't stat the file %s, %s\n",
+	    filename,
+	    strerror(errno));
+    if(errno == ENOENT){
+      return dirdts;
+    }
+    else{
+    exit(EXIT_FAILURE);
+    }
+  }
+
+  
+  //if it's directory, then read dir and add allthe files to the dirdts
+  if(S_ISDIR(f_stat.st_mode)){
+    dp = opendir(filename);
+    char *cfname;
+    if((cfname = malloc(MAXPATHLEN))==NULL){
+      fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+   
+    while((dirp = readdir(dp)) != NULL){
+      strcat(cfname, filename);
+      strcat(cfname, "/");
+      strcat(cfname, dirp->d_name);
+      //check if there is enough space in the dirdts
+      if(dirdts_size == dirdts_cnt){
+	dirdts_size *=2; 
+	if((dirdts = (dirdetails *)
+	    realloc((void *)dirdts,
+		    dirdts_size*sizeof(dirdetails)))==NULL){
+	  fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+	  exit(EXIT_FAILURE);
+	}
+	current_dirdts = dirdts + dirdts_cnt;
+
+      }
+      strcpy(sb_dirdts.f_name, dirp->d_name); 
+      if((stat(cfname, &sb_stat)) ==-1){
+	fprintf(stderr, "Can't stat the file %s, %s\n",
+		dirp->d_name, strerror(errno));
+	continue;
+      }
+      else{
+	sb_dirdts.sb = sb_stat;
+	memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
+      }
+      current_dirdts++;
+      dirdts_cnt++;
+      *cfname ='\0';
+    }
+  }
+  // if not a directory, push the stat of the file to the dirdts
+  else{
+    strcpy(sb_dirdts.f_name, filename);
+    sb_dirdts.sb = f_stat;
+    //check for enough space in the dirdts
+    if(dirdts_size == dirdts_cnt){
+      dirdts_size *=2; 
+      if(( dirdts = (dirdetails *)
+	   realloc((void *)dirdts,
+		   dirdts_size*sizeof(dirdetails)))==NULL){
+	fprintf(stderr,"Can't get memory %s\n",strerror(errno));
+	exit(EXIT_FAILURE);
+      }
+      current_dirdts = dirdts + dirdts_cnt;
+    }
+    memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
+    current_dirdts++;
+    dirdts_cnt++;
+
+  }
+  
+  return dirdts;
 }
