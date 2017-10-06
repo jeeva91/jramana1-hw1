@@ -1,4 +1,4 @@
-/*my get_opt function trial
+ /*my get_opt function trial
  *author: jeeva
  *date: 10/02/2017
  */
@@ -26,8 +26,12 @@ int dirdts_cnt;
 
 dirdetails* get_dirdts(char *filename, dirdetails *);
 
+void printfiles(dirdetails *dridts);
+
+int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
+
 int main(int argc, char *argv[]){
-  int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
+  A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
   char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
   int filenms_memsize =5;          // number of filenames the fileptr can hold
   int filecnt = 0;                 // number of filenames present in the fileptr
@@ -147,16 +151,20 @@ int main(int argc, char *argv[]){
   /* get the pwd as operand when no oprand is given */
   if(filecnt==0){
     filecnt++;
+    fileptr = NULL;
     fileptr = getcwd(fileptr, 0);
   }
   current_fileptr = fileptr;
   /* call the get_dirdts for all the operands */
+  char temp_name[255];
   for(iterator = 0;iterator<filecnt; iterator++){
     printf("%s\n", current_fileptr);
+    strcpy(temp_name, current_fileptr);
+    dirdts = get_dirdts(temp_name, dirdts);
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
 
-  
+  printfiles(dirdts);
 
   if(A){
   }
@@ -302,4 +310,15 @@ get_dirdts(char *filename, dirdetails *dirdts){
   }
   
   return dirdts;
+}
+
+
+void printfiles(dirdetails *dirdts){
+
+  dirdetails *current_dirdts;
+  int iterator;
+  current_dirdts = dirdts;
+  for(iterator = 0; iterator<dirdts_cnt;iterator++,current_dirdts++){
+    printf("%s\n",current_dirdts->f_name);
+  }
 }
