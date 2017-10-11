@@ -35,6 +35,17 @@ void printfiles(dirdetails *dridts);
 int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
 void printl(dirdetails *dirdts);
 
+int rctimecomparator(const void* first, const void* second);
+int ratimecomparator(const void* first, const void* second);
+int rmtimecomparator(const void* first, const void* second);
+int rsize_comparator(const void* first, const void* second);
+
+int ctimecomparator(const void* first, const void* second);
+int atimecomparator(const void* first, const void* second);
+int mtimecomparator(const void* first, const void* second);
+int size_comparator(const void* first, const void* second);
+  
+
 int main(int argc, char *argv[]){
   A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
   char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
@@ -168,6 +179,8 @@ int main(int argc, char *argv[]){
     dirdts = get_dirdts(temp_name, dirdts);
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
+
+  qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
 
   printl(dirdts);
   
@@ -350,4 +363,128 @@ void printl(dirdetails *dirdts){
   
   }
   
+}
+
+int atimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_atime;
+  ss = sec->sb.st_atime;
+
+  if(fs>ss) return 1;
+  else if(ss>fs) return -1;
+  else return 0;
+  
+
+}
+
+
+int mtimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_mtime;
+  ss = sec->sb.st_mtime;
+
+  if(fs>ss) return 1;
+  else if(ss>fs) return -1;
+  else return 0;
+  
+
+}
+
+
+int ctimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_ctime;
+  ss = sec->sb.st_ctime;
+
+  if(fs>ss) return 1;
+  else if(ss>fs) return -1;
+  else return 0;
+  
+
+}
+
+int size_comparator(const void* first, const void* second){
+  size_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_size;
+  ss = sec->sb.st_size;
+
+  if(fs>ss) return 1;
+  else if(ss>fs) return -1;
+  else return 0;
+  
+
+}
+
+int ratimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_atime;
+  ss = sec->sb.st_atime;
+
+  if(fs>ss) return -1;
+  else if(ss>fs) return 1;
+  else return 0;
+  
+
+}
+
+
+int rmtimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_mtime;
+  ss = sec->sb.st_mtime;
+
+  if(fs>ss) return -1;
+  else if(ss>fs) return 1;
+  else return 0;
+  
+
+}
+
+
+int rctimecomparator(const void* first, const void* second){
+  time_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_ctime;
+  ss = sec->sb.st_ctime;
+
+  if(fs>ss) return -1;
+  else if(ss>fs) return 1;
+  else return 0;
+  
+
+}
+
+int rsize_comparator(const void* first, const void* second){
+  size_t fs, ss;
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  fs = fir->sb.st_size;
+  ss = sec->sb.st_size;
+
+  if(fs>ss) return -1;
+  else if(ss>fs) return 1;
+  else return 0;
+  
+
 }
