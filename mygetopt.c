@@ -32,6 +32,8 @@ dirdetails* get_dirdts(char *filename, dirdetails *);
 
 void printfiles(dirdetails *dridts);
 
+char* formatdate(char* str, time_t val);
+
 int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
 void printl(dirdetails *dirdts);
 
@@ -351,19 +353,22 @@ void printl(dirdetails *dirdts){
   dirdetails *current_dirdts;
   int iterator;
   char mode[11];
+  char date[36];
   
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
     strmode(current_dirdts->sb.st_mode, mode);
-    printf("%lu\t%s\t%s\t%s\t%lu\t%s\n",current_dirdts->sb.st_ino, mode,
+    printf("%lu\t%s\t%s\t%s\t%lu\t%s\t%s\n",current_dirdts->sb.st_ino, mode,
 	   getpwuid(current_dirdts->sb.st_uid)->pw_name,
 	   getgrgid(current_dirdts->sb.st_gid)->gr_name,
 	   current_dirdts->sb.st_size,
+	   formatdate(date, current_dirdts->sb.st_ctime),
 	   current_dirdts->f_name);
   
   }
   
 }
+
 
 int atimecomparator(const void* first, const void* second){
   time_t fs, ss;
@@ -486,5 +491,9 @@ int rsize_comparator(const void* first, const void* second){
   else if(ss>fs) return 1;
   else return 0;
   
+}
+char* formatdate(char* str, time_t val){
+  strftime(str, 36, "%b %d %H %M", localtime(&val));
+  return str;
 
 }
