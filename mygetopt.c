@@ -337,13 +337,16 @@ void printfiles(dirdetails *dirdts){
 void printl(dirdetails *dirdts){
   dirdetails *current_dirdts;
   int iterator;
-  char mode[1];
+  char mode[11];
   
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
     strmode(current_dirdts->sb.st_mode, mode);
-    printf("%lu\t%s\t%s\t%s\t%s\n",current_dirdts->sb.st_ino, mode, getpwuid(current_dirdts->sb.st_uid)->pw_name,
-	   getgrgid(current_dirdts->sb.st_gid)->gr_name, /*ctime(current_dirdts->sb.st_ctime),*/ current_dirdts->f_name);
+    printf("%lu\t%s\t%s\t%s\t%s\n",current_dirdts->sb.st_ino, mode,
+	   getpwuid(current_dirdts->sb.st_uid)->pw_name,
+	   getgrgid(current_dirdts->sb.st_gid)->gr_name,
+	   current_dirdts->f_name);
+  
   }
   
 }
