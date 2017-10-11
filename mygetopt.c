@@ -11,6 +11,10 @@
 #include<sys/param.h>
 #include<sys/stat.h>
 #include<dirent.h>
+#include<pwd.h>
+#include<grp.h>
+#include<time.h>
+//#include<libbsd.h>
 
 #define FILENAMESIZE 255
 
@@ -29,6 +33,7 @@ dirdetails* get_dirdts(char *filename, dirdetails *);
 void printfiles(dirdetails *dridts);
 
 int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
+void printl(dirdetails *dirdts);
 
 int main(int argc, char *argv[]){
   A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
@@ -164,8 +169,8 @@ int main(int argc, char *argv[]){
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
 
-  printfiles(dirdts);
-  /*
+  printl(dirdts);
+  
   if(A){
   }
   if(a){
@@ -210,7 +215,7 @@ int main(int argc, char *argv[]){
   }
   if(one){
   }
-  */
+  
   
   
   
@@ -320,10 +325,25 @@ void printfiles(dirdetails *dirdts){
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt;iterator++,current_dirdts++){
     if(i){
-      printf("%s\n",current_dirdts->sb.st_ino,current_dirdts->f_name);
+      printf("%lu\t%s\n",current_dirdts->sb.st_ino,current_dirdts->f_name);
     }
     else{
     printf("%s\n",current_dirdts->f_name);
     }
   }
+}
+
+
+void printl(dirdetails *dirdts){
+  dirdetails *current_dirdts;
+  int iterator;
+  char mode[1];
+  
+  current_dirdts = dirdts;
+  for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
+    strmode(current_dirdts->sb.st_mode, mode);
+    printf("%lu\t%s\t%s\t%s\t%s\n",current_dirdts->sb.st_ino, mode, getpwuid(current_dirdts->sb.st_uid)->pw_name,
+	   getgrgid(current_dirdts->sb.st_gid)->gr_name, /*ctime(current_dirdts->sb.st_ctime),*/ current_dirdts->f_name);
+  }
+  
 }
