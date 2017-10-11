@@ -342,9 +342,10 @@ void printl(dirdetails *dirdts){
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
     strmode(current_dirdts->sb.st_mode, mode);
-    printf("%lu\t%s\t%s\t%s\t%s\n",current_dirdts->sb.st_ino, mode,
+    printf("%lu\t%s\t%s\t%s\t%lu\t%s\n",current_dirdts->sb.st_ino, mode,
 	   getpwuid(current_dirdts->sb.st_uid)->pw_name,
 	   getgrgid(current_dirdts->sb.st_gid)->gr_name,
+	   current_dirdts->sb.st_size,
 	   current_dirdts->f_name);
   
   }
