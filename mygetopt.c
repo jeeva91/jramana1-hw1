@@ -15,8 +15,9 @@
 #include<grp.h>
 #include<time.h>
 
-#define FILENAMESIZE 255
+//#define FILENAMESIZE
 
+long max_path;
 #define FILESIZE 255
 
 typedef struct{
@@ -76,6 +77,7 @@ main(int argc, char *argv[]){
   filecnt = 0;       
   dirdts_size = 10;
   dirdts_cnt = 0;
+  max_path = pathconf(".", _PC_PATH_MAX);
   if((dirdts = calloc(dirdts_size, sizeof(dirdetails)))==NULL){
     fprintf(stderr,
 	    "Error while getting the Memory allocated%s\n",
@@ -83,7 +85,7 @@ main(int argc, char *argv[]){
     exit(EXIT_FAILURE);
   }  
 
-  if((fileptr = malloc(filenms_memsize*FILENAMESIZE))==NULL){
+  if((fileptr = malloc(filenms_memsize*max_path))==NULL){
     fprintf(stderr, "Error while allocating the memory fo rthe filenames");
     exit(EXIT_FAILURE);
   }
@@ -171,7 +173,7 @@ main(int argc, char *argv[]){
     else{ 
       if(filecnt == filenms_memsize){
 	filenms_memsize = filenms_memsize*2;
-	if((fileptr = realloc(fileptr, filenms_memsize*FILENAMESIZE))==NULL){
+	if((fileptr = realloc(fileptr, filenms_memsize*max_path))==NULL){
 	  fprintf(stderr,
 		  "Error while allocating the memory for the filenames");
 	  exit(EXIT_FAILURE);
@@ -180,7 +182,7 @@ main(int argc, char *argv[]){
       strcpy(current_fileptr, argv[optind]);
       optind++;
       filecnt++;
-      current_fileptr +=FILENAMESIZE; 
+      current_fileptr +=max_path; 
       
     }
   }
@@ -193,9 +195,9 @@ main(int argc, char *argv[]){
   }
   current_fileptr = fileptr;
   /* call the get_dirdts for all the operands */
-  char temp_name[255];
+  char temp_name[max_path];
   for(iterator = 0;iterator<filecnt; iterator++){
-    current_fileptr = fileptr + iterator*FILENAMESIZE;
+    current_fileptr = fileptr + iterator*max_path;
     strcpy(temp_name, current_fileptr);
     dirdts = get_dirdts(temp_name, dirdts);
     
@@ -293,7 +295,7 @@ get_dirdts(char *filename, dirdetails *dirdts){
   if(S_ISDIR(f_stat.st_mode)){
     dp = opendir(filename);
     char *cfname;
-    if((cfname = malloc(MAXPATHLEN))==NULL){
+    if((cfname = malloc(max_path))==NULL){
       fprintf(stderr,"Can't get memory %s\n",strerror(errno));
       exit(EXIT_FAILURE);
     }
@@ -334,13 +336,13 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	  if(S_ISDIR(sb_stat.st_mode)){
 	    if(filecnt == filenms_memsize){
 	      filenms_memsize = filenms_memsize*2;
-	      if((fileptr = realloc(fileptr, filenms_memsize*FILENAMESIZE))==NULL){
+	      if((fileptr = realloc(fileptr, filenms_memsize*max_path))==NULL){
 		fprintf(stderr,
 			"Error while allocating the memory for the filenames");
 		exit(EXIT_FAILURE);
 	      }
 	    }
-	    current_fileptr = fileptr+(filecnt*FILENAMESIZE);
+	    current_fileptr = fileptr+(filecnt*max_path);
 	    strcpy(current_fileptr, cfname);
 	    filecnt++;
       
@@ -431,7 +433,7 @@ print(dirdetails *dirdts){
   char date[36];
   struct passwd *ps;
   struct group *gr;
-  char pfname[FILENAMESIZE];
+  char pfname[FILESIZE];
   char h_size[10];
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
@@ -685,7 +687,7 @@ int fname_comparator(const void* first, const void* second){
 }
 
 int rfname_comparator(const void* first, const void* second){
-  char fs[FILENAMESIZE], ss[FILENAMESIZE];
+  char fs[FILESIZE], ss[FILESIZE];
   dirdetails *fir, *sec;
   fir = (dirdetails *)first;
   sec = (dirdetails *)second;
