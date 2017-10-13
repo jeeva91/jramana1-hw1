@@ -14,7 +14,6 @@
 #include<pwd.h>
 #include<grp.h>
 #include<time.h>
-//#include<libbsd.h>
 
 #define FILENAMESIZE 255
 
@@ -30,16 +29,14 @@ int dirdts_cnt;
 
 dirdetails* get_dirdts(char *filename, dirdetails *);
 
-void printfiles(dirdetails *dridts);
-
 char* formatdate(char* str, time_t val);
 
 int sort, sortr, filter_A, filter_a, filter_d,
   disp_opt_i, disp_opt_s,disp_opt_F,
   disp_spl, print_format, time_type, size_format, recursive;
-//int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
+
 void print(dirdetails *dirdts);
-void printl(dirdetails *dirdts);
+
 int rfname_comparator(const void* first, const void* second);
 int rctimecomparator(const void* first, const void* second);
 int ratimecomparator(const void* first, const void* second);
@@ -52,8 +49,9 @@ int mtimecomparator(const void* first, const void* second);
 int size_comparator(const void* first, const void* second);
   
 
-int main(int argc, char *argv[]){
-  //A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
+int
+main(int argc, char *argv[]){
+
   sort =0;
   sortr = 0;
   filter_A = 0;
@@ -173,7 +171,8 @@ int main(int argc, char *argv[]){
       if(filecnt == filenms_memsize){
 	filenms_memsize = filenms_memsize*2;
 	if((fileptr = realloc(fileptr, filenms_memsize*FILENAMESIZE))==NULL){
-	  fprintf(stderr, "Error while allocating the memory fo rthe filenames");
+	  fprintf(stderr,
+		  "Error while allocating the memory fo rthe filenames");
 	  exit(EXIT_FAILURE);
 	}
       }
@@ -251,7 +250,6 @@ int main(int argc, char *argv[]){
   }
 
 
-  // qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
 
   print(dirdts);
 
@@ -391,43 +389,6 @@ get_dirdts(char *filename, dirdetails *dirdts){
   }
   
   return dirdts;
-}
-
-
-void printfiles(dirdetails *dirdts){
-
-  dirdetails *current_dirdts;
-  int iterator;
-  current_dirdts = dirdts;
-  for(iterator = 0; iterator<dirdts_cnt;iterator++,current_dirdts++){
-    if(disp_opt_i==1){
-      printf("%lu\t%s\n",current_dirdts->sb.st_ino,current_dirdts->f_name);
-    }
-    else{
-    printf("%s\n",current_dirdts->f_name);
-    }
-  }
-}
-
-
-void printl(dirdetails *dirdts){
-  dirdetails *current_dirdts;
-  int iterator;
-  char mode[11];
-  char date[36];
-  
-  current_dirdts = dirdts;
-  for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
-    strmode(current_dirdts->sb.st_mode, mode);
-    printf("%lu\t%s\t%s\t%s\t%lu\t%s\t%s\n",current_dirdts->sb.st_ino, mode,
-	   getpwuid(current_dirdts->sb.st_uid)->pw_name,
-	   getgrgid(current_dirdts->sb.st_gid)->gr_name,
-	   current_dirdts->sb.st_size,
-	   formatdate(date, current_dirdts->sb.st_ctime),
-	   current_dirdts->f_name);
-  
-  }
-  
 }
 
 
