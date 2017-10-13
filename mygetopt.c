@@ -454,10 +454,10 @@ print(dirdetails *dirdts){
 	printf("%s\t", gr->gr_name);
       switch(size_format){
       case 'h':
-	printf("%lu\t",current_dirdts->sb.st_size);
+	printf("%s\t",readable_fs(current_dirdts->sb.st_size,h_size));
 	break;
       case 'k':
-	printf("%lu\t",current_dirdts->sb.st_size);
+	printf("%lu%s\t",(current_dirdts->sb.st_size)/1024," KB");
 	break;
       default:
 	printf("%lu\t",current_dirdts->sb.st_size);
@@ -487,7 +487,7 @@ print(dirdetails *dirdts){
 	printf("%s\t",readable_fs(current_dirdts->sb.st_size,h_size));
 	break;
       case 'k':
-	printf("%lu%s\t",(current_dirdts->sb.st_size)/1024,"KB");
+	printf("%lu%s\t",(current_dirdts->sb.st_size)/1024," KB");
 	break;
       default:
 	printf("%lu\t",current_dirdts->sb.st_size);
