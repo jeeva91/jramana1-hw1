@@ -62,7 +62,7 @@ main(int argc, char *argv[]){
   sort =0;
   sortr = 0;
   filter_A = 0;
-  filter_a = 0;
+  filter_a = 1;
   filter_d = 0;
   disp_opt_i = 0;
   disp_opt_s = 0;
@@ -96,7 +96,7 @@ main(int argc, char *argv[]){
 	filter_A = 1;
 	break;
       case 'a':
-	filter_a = 1;
+	filter_a = 0;
 	break;
       case 'c':
 	time_type = 'c';
@@ -375,10 +375,18 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	/*
 	 *filter the files starting with .
 	 */
-	
+	/*
 	if(strncmp(dirp->d_name, ".", 1)){
-	  if(filter_a);
-	  else continue;
+	  if(~ filter_a);
+	  continue;
+	}
+	*/
+
+	if(filter_a){
+	  if(strncmp(dirp->d_name, ".", 1))
+	    ;
+	  else
+	    continue;
 	}
 	
 	memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
