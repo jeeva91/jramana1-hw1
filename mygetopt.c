@@ -1,4 +1,4 @@
- /*my get_opt function trial
+ /*Midterm LS project
  *author: jeeva
  *date: 10/02/2017
  */
@@ -26,9 +26,13 @@ typedef struct{
 
 int dirdts_size;
 int dirdts_cnt;
+char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
+int filenms_memsize =5;          // number of filenames the fileptr can hold
+int filecnt = 0;                 // number of filenames present in the fileptr
+
 
 dirdetails* get_dirdts(char *filename, dirdetails *);
-
+char* readable_fs(double size/*in bytes*/, char *buf);
 char* formatdate(char* str, time_t val);
 
 int sort, sortr, filter_A, filter_a, filter_d,
@@ -67,9 +71,6 @@ main(int argc, char *argv[]){
   recursive = 0;
 
 
-  char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
-  int filenms_memsize =5;          // number of filenames the fileptr can hold
-  int filecnt = 0;                 // number of filenames present in the fileptr
   int opt;
   int iterator;
   dirdetails *dirdts;
@@ -392,7 +393,8 @@ get_dirdts(char *filename, dirdetails *dirdts){
 }
 
 
-void print(dirdetails *dirdts){
+void
+print(dirdetails *dirdts){
   dirdetails *current_dirdts;
   int iterator;
   unsigned int iterator2;
@@ -401,6 +403,7 @@ void print(dirdetails *dirdts){
   struct passwd *ps;
   struct group *gr;
   char pfname[FILENAMESIZE];
+  char h_size[10];
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
     if(disp_opt_i)
@@ -451,10 +454,11 @@ void print(dirdetails *dirdts){
       printf("%d\t", current_dirdts->sb.st_gid);
       switch(size_format){
       case 'h':
-	printf("%lu\t",current_dirdts->sb.st_size);
+	
+	printf("%s\t",readable_fs(current_dirdts->sb.st_size,h_size));
 	break;
       case 'k':
-	printf("%lu\t",current_dirdts->sb.st_size);
+	printf("%lu%s\t",(current_dirdts->sb.st_size)/1024,"KB");
 	break;
       default:
 	printf("%lu\t",current_dirdts->sb.st_size);
@@ -660,4 +664,15 @@ char* formatdate(char* str, time_t val){
   strftime(str, 36, "%b %d %H:%M", localtime(&val));
   return str;
 
+}
+
+char* readable_fs(double size/*in bytes*/, char *buf) {
+    int i = 0;
+    const char* units[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
+    while (size > 1024) {
+        size /= 1024;
+        i++;
+    }
+    sprintf(buf, "%.*f %s", i, size, units[i]);
+    return buf;
 }
