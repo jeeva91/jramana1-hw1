@@ -429,7 +429,7 @@ print(dirdetails *dirdts){
     if(disp_opt_i)
       printf("%lu\t", current_dirdts->sb.st_ino);
     if(disp_opt_s){
-      printf("%d\t", current_dirdts->sb.st_blksize);
+      printf("%ld\t", current_dirdts->sb.st_blocks);
     }
     if(print_format=='l'){
       strmode(current_dirdts->sb.st_mode, mode);
@@ -518,7 +518,7 @@ print(dirdetails *dirdts){
     if(disp_opt_F){
       if(S_ISDIR(current_dirdts->sb.st_mode))
 	printf("/");
-      else if(S_ISREG(current_dirdts->sb.st_mode))
+      else if(current_dirdts->sb.st_mode & S_IXUSR)
 	printf("*");
       else if(S_ISFIFO(current_dirdts->sb.st_mode))
 	printf("|");
@@ -526,6 +526,12 @@ print(dirdetails *dirdts){
 	printf("@");
       else if(S_ISSOCK(current_dirdts->sb.st_mode))
 	printf("=");
+      else{
+	strmode(current_dirdts->sb.st_mode, mode);
+	if(mode[0]=='w')
+	  printf("%s","%");
+      }
+      
     }
     
     
