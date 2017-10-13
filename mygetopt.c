@@ -375,9 +375,10 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	/*
 	 *filter the files starting with .
 	 */
-	if(filter_a){
-	  if(strncmp(dirp->d_name, ".", 1))
-	    continue;
+	
+	if(strncmp(dirp->d_name, ".", 1)){
+	  if(filter_a);
+	  else continue;
 	}
 	
 	memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
