@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
   int filecnt = 0;                 // number of filenames present in the fileptr
   int opt;
   int iterator;
-  dirdetails *dirdts, *current_dirdts;
+  dirdetails *dirdts;
   dirdts_size = 10;
   dirdts_cnt = 0;
   if((dirdts = calloc(dirdts_size, sizeof(dirdetails)))==NULL){
@@ -299,6 +299,7 @@ get_dirdts(char *filename, dirdetails *dirdts){
     }
    
     while((dirp = readdir(dp)) != NULL){
+      *cfname ='\0';
       strcat(cfname, filename);
       strcat(cfname, "/");
       strcat(cfname, dirp->d_name);
@@ -315,6 +316,7 @@ get_dirdts(char *filename, dirdetails *dirdts){
 
       }
       strcpy(sb_dirdts.f_name, dirp->d_name); 
+
       if((stat(cfname, &sb_stat)) ==-1){
 	if((lstat(cfname, &sb_stat)) ==-1){
 	   fprintf(stderr, "Can't stat the file %s, %s\n",
@@ -324,11 +326,47 @@ get_dirdts(char *filename, dirdetails *dirdts){
       }
       else{
 	sb_dirdts.sb = sb_stat;
+
+	/*
+	 *filter only the directories
+	 */
+
+	if(filter_d){
+	  if(S_ISDIR(sb_stat.st_mode))
+	    ;
+	  else
+	    continue;
+	}
+
+	/*
+	 *filter the . and .. directories
+	 */
+
+	if(filter_A){
+	  if(S_ISDIR(sb_stat.st_mode)){
+	    if(strcmp(".", dirp->d_name)||strcmp("..",dirp->d_name))
+	      ;
+	    else
+	      continue;
+	  }
+	}
+
+	/*
+	 *filter the files starting with .
+	 */
+	if(filter_a){
+	  if(strncmp(dirp->d_name, ".", 1))
+	    ;
+	  else
+	    continue;
+	}
+	
 	memcpy(current_dirdts, &sb_dirdts, sizeof(dirdetails));
+	current_dirdts++;
+	dirdts_cnt++;
       }
-      current_dirdts++;
-      dirdts_cnt++;
-      *cfname ='\0';
+      
+    
     }
   }
   // if not a directory, push the stat of the file to the dirdts
@@ -528,7 +566,7 @@ int fname_comparator(const void* first, const void* second){
 }
 
 int rfname_comparator(const void* first, const void* second){
-  char fs[255], ss[255];
+  char fs[FILENAMESIZE], ss[FILENAMESIZE];
   dirdetails *fir, *sec;
   fir = (dirdetails *)first;
   sec = (dirdetails *)second;
