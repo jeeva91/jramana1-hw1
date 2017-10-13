@@ -334,18 +334,19 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	 */
 	if(recursive){
 	  if(S_ISDIR(sb_stat.st_mode)){
-	    if(filecnt == filenms_memsize){
-	      filenms_memsize = filenms_memsize*2;
-	      if((fileptr = realloc(fileptr, filenms_memsize*max_path))==NULL){
-		fprintf(stderr,
-			"Error while allocating the memory for the filenames");
-		exit(EXIT_FAILURE);
+	    if(~((strcmp(dirp->d_name, ".")||strcmp(dirp->d_name, "..")))){
+	      if(filecnt == filenms_memsize){
+		filenms_memsize = filenms_memsize*2;
+		if((fileptr = realloc(fileptr, filenms_memsize*max_path))==NULL){
+		  fprintf(stderr,
+			  "Error while allocating the memory for the filenames");
+		  exit(EXIT_FAILURE);
+		}
 	      }
+	      current_fileptr = fileptr+(filecnt*max_path);
+	      strcpy(current_fileptr, cfname);
+	      filecnt++;
 	    }
-	    current_fileptr = fileptr+(filecnt*max_path);
-	    strcpy(current_fileptr, cfname);
-	    filecnt++;
-      
 	  }
 
 	}
