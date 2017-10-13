@@ -334,7 +334,7 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	 */
 	if(recursive){
 	  if(S_ISDIR(sb_stat.st_mode)){
-	    if(~((strcmp(dirp->d_name, ".")||strcmp(dirp->d_name, "..")))){
+	    if(~((strcmp(dirp->d_name, ".")==0)||(strcmp(dirp->d_name, "..")==0))){
 	      if(filecnt == filenms_memsize){
 		filenms_memsize = filenms_memsize*2;
 		if((fileptr = realloc(fileptr, filenms_memsize*max_path))==NULL){
