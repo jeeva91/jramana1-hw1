@@ -431,6 +431,105 @@ void printl(dirdetails *dirdts){
 }
 
 
+void print(dirdetails *dirdts){
+  dirdetails *current_dirdts;
+  int iterator;
+  char mode[11];
+  char date[36];
+  struct passwd *ps;
+  struct group *gr;
+  
+  current_dirdts = dirdts;
+  for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
+    if(disp_opt_i)
+      printf("%lu\t", current_dirdts->sb.st_ino);
+    if(disp_opt_s){
+      printf("%d\t", current_dirdts->sb.st_blksize);
+    }
+    if(print_format=='l'){
+      strmode(current_dirdts->sb.st_mode, mode);
+      printf("%s\t", mode);
+      printf("%d\t", current_dirdts->sb.st_nlink);
+      if((ps = getpwuid(current_dirdts->sb.st_uid))==NULL)
+	printf("%d\t",current_dirdts->sb.st_uid);
+      else
+	printf("%s\t", ps->pw_name);
+      if((gr = getgrgid(current_dirdts->sb.st_gid))==NULL)
+	printf("%d\t", current_dirdts->sb.st_gid);
+      else
+	printf("%s\t", gr->gr_name);
+      switch(size_format){
+      case 'h':
+	printf("%lu\t",current_dirdts->sb.st_size);
+	break;
+      case 'k':
+	printf("%lu\t",current_dirdts->sb.st_size);
+	break;
+      default:
+	printf("%lu\t",current_dirdts->sb.st_size);
+
+      }
+      switch(time_type){
+      case 'a':
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_atime));
+	break;
+      case 'c':
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_ctime));
+	break;
+      default:
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_mtime));
+
+      }
+    }
+    else if(print_format=='n'){
+      strmode(current_dirdts->sb.st_mode, mode);
+      printf("%s\t", mode);
+      printf("%d\t", current_dirdts->sb.st_nlink);
+      printf("%d\t",current_dirdts->sb.st_uid);
+      printf("%d\t", current_dirdts->sb.st_gid);
+      switch(size_format){
+      case 'h':
+	printf("%lu\t",current_dirdts->sb.st_size);
+	break;
+      case 'k':
+	printf("%lu\t",current_dirdts->sb.st_size);
+	break;
+      default:
+	printf("%lu\t",current_dirdts->sb.st_size);
+
+      }
+      switch(time_type){
+      case 'a':
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_atime));
+	break;
+      case 'c':
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_ctime));
+	break;
+      default:
+	printf("%s\t", formatdate(date, current_dirdts->sb.st_mtime));
+
+      }
+            
+    }
+
+    switch(disp_spl){
+    case 'w':
+      printf("%s\t", current_dirdts->f_name);
+      break;
+    default:
+      /*
+       *convert non printable to string before printig
+       */
+      printf("%s", current_dirdts->f_name);
+    }
+
+    
+    printf("\n");
+  }
+  
+}
+
+
 int atimecomparator(const void* first, const void* second){
   time_t fs, ss;
   dirdetails *fir, *sec;
@@ -577,7 +676,7 @@ int rfname_comparator(const void* first, const void* second){
 }
 
 char* formatdate(char* str, time_t val){
-  strftime(str, 36, "%b %d %H %M", localtime(&val));
+  strftime(str, 36, "%b %d %H:%M", localtime(&val));
   return str;
 
 }
