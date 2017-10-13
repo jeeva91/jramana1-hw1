@@ -377,8 +377,6 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	 */
 	if(filter_a){
 	  if(strncmp(dirp->d_name, ".", 1))
-	    ;
-	  else
 	    continue;
 	}
 	
