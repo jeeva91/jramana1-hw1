@@ -34,14 +34,18 @@ void printfiles(dirdetails *dridts);
 
 char* formatdate(char* str, time_t val);
 
-int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
-void printl(dirdetails *dirdts);
+int sort, sortr, filter_A, filter_a, filter_d,
+  disp_opt_i, disp_opt_s,disp_opt_F,
+  disp_spl, print_format, time_type, size_format, recursive;
+//int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
 
+void printl(dirdetails *dirdts);
+int rfname_comparator(const void* first, const void* second);
 int rctimecomparator(const void* first, const void* second);
 int ratimecomparator(const void* first, const void* second);
 int rmtimecomparator(const void* first, const void* second);
 int rsize_comparator(const void* first, const void* second);
-
+int fname_comparator(const void* first, const void* second);
 int ctimecomparator(const void* first, const void* second);
 int atimecomparator(const void* first, const void* second);
 int mtimecomparator(const void* first, const void* second);
@@ -49,7 +53,22 @@ int size_comparator(const void* first, const void* second);
   
 
 int main(int argc, char *argv[]){
-  A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
+  //A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one = 0;
+  sort =0;
+  sortr = 0;
+  filter_A = 0;
+  filter_a = 0;
+  filter_d = 0;
+  disp_opt_i = 0;
+  disp_opt_s = 0;
+  disp_opt_F = 0;
+  disp_spl = 'q';
+  print_format = '1';
+  time_type = 0;
+  size_format = 'h';
+  recursive = 0;
+
+
   char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
   int filenms_memsize =5;          // number of filenames the fileptr can hold
   int filecnt = 0;                 // number of filenames present in the fileptr
@@ -75,70 +94,70 @@ int main(int argc, char *argv[]){
     if((opt = getopt(argc, argv, "AacCdFfhiklnqRrSstuwx1")) != -1){
       switch(opt){
       case 'A':
-	A = 1;
+	filter_A = 1;
 	break;
       case 'a':
-	a = 1;
+	filter_a = 1;
 	break;
       case 'c':
-	c = 1;
+	time_type = 'c';
 	break;
       case 'C':
-	C = 1;
+	print_format = 'C';
 	break;
       case 'd':
-	d = 1;
+	filter_d = 1;
 	break;
       case 'F':
-	F = 1;
+	disp_opt_F = 1;
 	break;
       case 'f':
-	f = 1;
+	sort = 'f';
 	break;
       case 'h':
-	h = 1;
+	size_format = 'h';
 	break;
       case 'i':
-	i = 1;
+	disp_opt_i = 1;
 	break;
       case 'k':
-	k = 1;
+	size_format = 'k';
 	break;
       case 'l':
-	l = 1;
+	print_format = 'l';
 	break;
       case 'n':
-	n = 1;
+	print_format = 'n';
 	break;
       case 'q':
-	q = 1;
+	disp_spl = 'q';
 	break;
       case 'R':
-	R = 1;
+	recursive = 1;
 	break;
       case 'r':
-	r = 1;
+	sortr = 'r';
 	break;
       case 'S':
-	S = 1;
+	sort = 'S';
 	break;
       case 's':
-	s = 1;
+	disp_opt_s = 1;
 	break;
       case 't':
-	t = 1;
+	sort = 't';
 	break;
       case 'u':
-	u =1;
+	time_type = 'u';
 	break;
       case 'w':
-	w = 1;
+	disp_spl = 'w';
 	break;
       case 'x':
-	x = 1;
+	print_format = 'x';
 	break;
       case '1':
-	one =1;
+	print_format = '1';
 	break;
       default:
 	printf("this is ls");
@@ -181,61 +200,60 @@ int main(int argc, char *argv[]){
     dirdts = get_dirdts(temp_name, dirdts);
     current_fileptr = current_fileptr + FILENAMESIZE;
   }
+  
+  /*
+   *sort as per the options
+   */
 
-  qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
+  if(sortr){
+    switch(sort){
+    case 'f':
+      break;
+    case 's':
+      qsort(dirdts,dirdts_cnt, sizeof(dirdetails), rsize_comparator);
+      break;
+    case 't':
+      switch(time_type){
+      case 'c':
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), rctimecomparator);
+	break;
+      case 'u':
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), ratimecomparator);
+      default:
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), rmtimecomparator);
+      }
+      break;
+    default:
+      qsort(dirdts,dirdts_cnt, sizeof(dirdetails), rfname_comparator);
+    }
+  }
+  else{
+    switch(sort){
+    case 'f':
+      break;
+    case 's':
+      qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
+      break;
+    case 't':
+      switch(time_type){
+      case 'c':
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), ctimecomparator);
+	break;
+      case 'u':
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), atimecomparator);
+      default:
+	qsort(dirdts,dirdts_cnt, sizeof(dirdetails), mtimecomparator);
+      }
+      break;
+    default:
+      qsort(dirdts,dirdts_cnt, sizeof(dirdetails), fname_comparator);
+    }
+  }
+
+
+  // qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
 
   printl(dirdts);
-  
-  if(A){
-  }
-  if(a){
-  }
-  if(c){
-  }
-  if(C){
-  }
-  if(d){
-  }
-  if(F){
-  }
-  if(f){
-  }
-  if(h){
-  }
-  if(i){
-  }
-  if(k){
-  }
-  if(l){
-  }
-  if(n){
-  }
-  if(q){
-  }
-  if(R){
-  }
-  if(r){
-  }
-  if(S){
-  }
-  if(s){
-  }
-  if(t){
-  }
-  if(u){
-  }
-  if(w){
-  }
-  if(x){
-  }
-  if(one){
-  }
-  
-  
-  
-  
-
-
 
 
   free(dirdts);
@@ -255,16 +273,19 @@ get_dirdts(char *filename, dirdetails *dirdts){
   current_dirdts = dirdts + dirdts_cnt;
 
   if((stat(filename, &f_stat))==-1){
-    fprintf(stderr,
-	    "Can't stat the file %s, %s\n",
-	    filename,
-	    strerror(errno));
-    if(errno == ENOENT){
-      return dirdts;
-    }
-    else{
-    exit(EXIT_FAILURE);
-    }
+      if((lstat(filename, &f_stat))==-1){
+	fprintf(stderr,
+		"Can't stat the file %s, %s\n",
+		filename,
+		strerror(errno));
+	if(errno == ENOENT){
+	  return dirdts;
+	}
+    
+	else{
+	  exit(EXIT_FAILURE);
+	}
+      }
   }
 
   
@@ -295,9 +316,11 @@ get_dirdts(char *filename, dirdetails *dirdts){
       }
       strcpy(sb_dirdts.f_name, dirp->d_name); 
       if((stat(cfname, &sb_stat)) ==-1){
-	fprintf(stderr, "Can't stat the file %s, %s\n",
-		dirp->d_name, strerror(errno));
-	continue;
+	if((lstat(cfname, &sb_stat)) ==-1){
+	   fprintf(stderr, "Can't stat the file %s, %s\n",
+		   dirp->d_name, strerror(errno));
+	   continue;
+	 }
       }
       else{
 	sb_dirdts.sb = sb_stat;
@@ -339,7 +362,7 @@ void printfiles(dirdetails *dirdts){
   int iterator;
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt;iterator++,current_dirdts++){
-    if(i){
+    if(disp_opt_i==1){
       printf("%lu\t%s\n",current_dirdts->sb.st_ino,current_dirdts->f_name);
     }
     else{
@@ -492,6 +515,29 @@ int rsize_comparator(const void* first, const void* second){
   else return 0;
   
 }
+
+int fname_comparator(const void* first, const void* second){
+  char fs[255], ss[255];
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  strcpy(fs,fir->f_name);
+  strcpy(ss,sec->f_name);
+  return strcmp(fs,ss);
+  
+}
+
+int rfname_comparator(const void* first, const void* second){
+  char fs[255], ss[255];
+  dirdetails *fir, *sec;
+  fir = (dirdetails *)first;
+  sec = (dirdetails *)second;
+  strcpy(fs,fir->f_name);
+  strcpy(ss,sec->f_name);
+  return strcmp(ss,fs);
+  
+}
+
 char* formatdate(char* str, time_t val){
   strftime(str, 36, "%b %d %H %M", localtime(&val));
   return str;
