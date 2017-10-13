@@ -434,11 +434,12 @@ void printl(dirdetails *dirdts){
 void print(dirdetails *dirdts){
   dirdetails *current_dirdts;
   int iterator;
+  unsigned int iterator2;
   char mode[11];
   char date[36];
   struct passwd *ps;
   struct group *gr;
-  
+  char pfname[FILENAMESIZE];
   current_dirdts = dirdts;
   for(iterator = 0; iterator<dirdts_cnt; iterator++, current_dirdts++){
     if(disp_opt_i)
@@ -520,9 +521,28 @@ void print(dirdetails *dirdts){
       /*
        *convert non printable to string before printig
        */
-      printf("%s", current_dirdts->f_name);
+      
+      strcpy(pfname,current_dirdts->f_name);
+      for(iterator2=0;iterator2<strlen(pfname);iterator2++){
+	if(pfname[iterator2]<32)
+	  pfname[iterator2] = '?';
+      }
+      printf("%s", pfname);
     }
 
+    if(disp_opt_F){
+      if(S_ISDIR(current_dirdts->sb.st_mode))
+	printf("/");
+      else if(S_ISREG(current_dirdts->sb.st_mode))
+	printf("*");
+      else if(S_ISFIFO(current_dirdts->sb.st_mode))
+	printf("|");
+      else if(S_ISLNK(current_dirdts->sb.st_mode))
+	printf("@");
+      else if(S_ISSOCK(current_dirdts->sb.st_mode))
+	printf("=");
+    }
+    
     
     printf("\n");
   }
