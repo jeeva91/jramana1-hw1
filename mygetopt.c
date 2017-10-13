@@ -38,7 +38,7 @@ int sort, sortr, filter_A, filter_a, filter_d,
   disp_opt_i, disp_opt_s,disp_opt_F,
   disp_spl, print_format, time_type, size_format, recursive;
 //int A, a, c, C, d, F, f, h, i, k, l, n, q, R, r, S, s, t, u, w, x, one;
-
+void print(dirdetails *dirdts);
 void printl(dirdetails *dirdts);
 int rfname_comparator(const void* first, const void* second);
 int rctimecomparator(const void* first, const void* second);
@@ -253,7 +253,7 @@ int main(int argc, char *argv[]){
 
   // qsort(dirdts,dirdts_cnt, sizeof(dirdetails), size_comparator);
 
-  printl(dirdts);
+  print(dirdts);
 
 
   free(dirdts);
