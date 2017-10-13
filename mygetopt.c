@@ -26,9 +26,9 @@ typedef struct{
 
 int dirdts_size;
 int dirdts_cnt;
-char *fileptr, *current_fileptr; //ptrs to get the operands(filenames)
-int filenms_memsize =5;          // number of filenames the fileptr can hold
-int filecnt = 0;                 // number of filenames present in the fileptr
+char *fileptr;  //ptrs to get the operands(filenames)
+int filenms_memsize;          // number of filenames the fileptr can hold
+int filecnt;                 // number of filenames present in the fileptr
 
 
 dirdetails* get_dirdts(char *filename, dirdetails *);
@@ -55,7 +55,10 @@ int size_comparator(const void* first, const void* second);
 
 int
 main(int argc, char *argv[]){
-
+  int opt;
+  int iterator;
+  dirdetails *dirdts;
+  char* current_fileptr;
   sort =0;
   sortr = 0;
   filter_A = 0;
@@ -69,11 +72,8 @@ main(int argc, char *argv[]){
   time_type = 0;
   size_format = 'h';
   recursive = 0;
-
-
-  int opt;
-  int iterator;
-  dirdetails *dirdts;
+  filenms_memsize =5;
+  filecnt = 0;       
   dirdts_size = 10;
   dirdts_cnt = 0;
   if((dirdts = calloc(dirdts_size, sizeof(dirdetails)))==NULL){
@@ -173,7 +173,7 @@ main(int argc, char *argv[]){
 	filenms_memsize = filenms_memsize*2;
 	if((fileptr = realloc(fileptr, filenms_memsize*FILENAMESIZE))==NULL){
 	  fprintf(stderr,
-		  "Error while allocating the memory fo rthe filenames");
+		  "Error while allocating the memory for the filenames");
 	  exit(EXIT_FAILURE);
 	}
       }
@@ -195,10 +195,10 @@ main(int argc, char *argv[]){
   /* call the get_dirdts for all the operands */
   char temp_name[255];
   for(iterator = 0;iterator<filecnt; iterator++){
-    printf("%s\n", current_fileptr);
+    current_fileptr = fileptr + iterator*FILENAMESIZE;
     strcpy(temp_name, current_fileptr);
     dirdts = get_dirdts(temp_name, dirdts);
-    current_fileptr = current_fileptr + FILENAMESIZE;
+    
   }
   
   /*
@@ -267,6 +267,7 @@ dirdetails*
 get_dirdts(char *filename, dirdetails *dirdts){
   struct dirent *dirp;
   DIR* dp;
+  char* current_fileptr;
   struct stat f_stat, sb_stat;
   dirdetails *current_dirdts, sb_dirdts;
   current_dirdts = dirdts + dirdts_cnt;
@@ -327,9 +328,30 @@ get_dirdts(char *filename, dirdetails *dirdts){
 	sb_dirdts.sb = sb_stat;
 
 	/*
+	 *recursive directory traversal
+	 */
+	if(recursive){
+	  if(S_ISDIR(sb_stat.st_mode)){
+	    if(filecnt == filenms_memsize){
+	      filenms_memsize = filenms_memsize*2;
+	      if((fileptr = realloc(fileptr, filenms_memsize*FILENAMESIZE))==NULL){
+		fprintf(stderr,
+			"Error while allocating the memory for the filenames");
+		exit(EXIT_FAILURE);
+	      }
+	    }
+	    current_fileptr = fileptr+(filecnt*FILENAMESIZE);
+	    strcpy(current_fileptr, cfname);
+	    filecnt++;
+      
+	  }
+
+	}
+	
+	/*
 	 *filter only the directories
 	 */
-
+	
 	if(filter_d){
 	  if(S_ISDIR(sb_stat.st_mode))
 	    ;
