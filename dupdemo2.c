@@ -10,7 +10,7 @@ int main(void){
     perror("unable to open the file");
     exit(1);
   }
-  if((r = dup2(STDOUT_FILENO, file))!=file){
+  if((r = dup2(file, STDOUT_FILENO))!=STDOUT_FILENO){
     perror("unable to dupe the stdout to file");
   }
   
