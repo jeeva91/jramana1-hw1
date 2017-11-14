@@ -1,0 +1,17 @@
+#make for the assignment 4
+#author: jeeva
+
+lib: greet.o
+
+greet.o: greet.c
+	 cc -Wall -c -fPIC greet.c
+
+
+libgreet.so: greet.o
+	     cc -shared -Wl,-soname,libgreet.so.1 -o lib/libgreet.so.1.0 greet.o
+
+libgreet.so.1: libgreet.so.1.0
+	       ln -s libgreet.so.1.0 lib/libgreet.so.1
+
+libgreet.so: libgreet.so.1.0
+	     ln -s libgreet.so.1.0 lib/libgreet.so
